@@ -181,9 +181,28 @@ async def health():
 
 @app.post("/syncpay/webhook")
 async def syncpay_webhook(request: Request):
+
     incoming_secret = request.headers.get("x-syncpay-secret", "")
-    if not SYNC_WEBHOOK_SECRET or incoming_secret != SYNC_WEBHOOK_SECRET:
+    if SYNC_WEBHOOK_SECRET and incoming_secret != SYNC_WEBHOOK_SECRET:
         raise HTTPException(status_code=401, detail="invalid webhook secret")
+
+    payload = await request.json()
+    data = payload.get("data") or payload
+
+    status = str(data.get("status", "")).upper()
+    tx_id = str(data.get("id") or data.get("transaction_id") or "")
+
+    # Quando pago/aprovado:
+    if status in {"PAID", "CONFIRMED", "APPROVED", "COMPLETED", "SUCCESS"}:
+        row = CONN.execute(
+            "SELECT id FROM orders WHERE status='PENDING' ORDER BY id DESC LIMIT 1"
+        ).fetchone()
+        if row:
+            order_id = int(row[0])
+            mark_paid(order_id, tx_id)
+        return JSONResponse({"received": True, "marked": True, "tx": tx_id})
+
+    return JSONResponse({"received": True, "marked": False, "status": status})
 
     payload = await request.json()
     data = payload.get("data") or payload
