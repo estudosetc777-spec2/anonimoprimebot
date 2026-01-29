@@ -181,7 +181,8 @@ async def health():
 
 @app.post("/syncpay/webhook")
 async def syncpay_webhook(request: Request):
-
+        print("SYNC WEBHOOK HIT", dict(request.headers)
+              
     incoming_secret = request.headers.get("x-syncpay-secret", "")
     if SYNC_WEBHOOK_SECRET and incoming_secret != SYNC_WEBHOOK_SECRET:
         raise HTTPException(status_code=401, detail="invalid webhook secret")
