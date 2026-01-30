@@ -146,28 +146,28 @@ async def plan_cb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def check_payment_cb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query
     await q.answer()
-    order_id = int(q.data.split(":", 1)[1])
 
-    if not is_paid(order_id):
-        await q.message.reply_text("⏳ Ainda não consta como pago. Se você acabou de pagar, aguarde 1–2 min e tente novamente.")
-        return
+    order_id = q.data.split(":")[1]
+    user = q.from_user
 
-    if not GROUP_CHAT_ID:
-        await q.message.reply_text("⚠️ GROUP_CHAT_ID não configurado no servidor.")
-        return
+    # avisa o usuário
+    await q.message.reply_text(
+        "📨 Pedido enviado ao suporte!\n\n"
+        "Aguarde alguns minutos enquanto conferimos seu pagamento."
+    )
 
-    try:
-        invite = await context.bot.create_chat_invite_link(
-            chat_id=int(GROUP_CHAT_ID),
-            member_limit=1,
-            creates_join_request=False,
-            name=f"VIP-order-{order_id}",
-        )
-    except Exception as e:
-        await q.message.reply_text(f"Não consegui criar o link. Verifique se o bot é admin no grupo.\nErro: {e}")
-        return
-
-    await q.message.reply_text(f"🎉 Pagamento confirmado!\n\n✅ Seu link de acesso (1 uso):\n{invite.invite_link}")
+    # avisa VOCÊ (admin)
+    await context.bot.send_message(
+        chat_id=GROUP_CHAT_ID,
+        text=(
+            "🆘 *SOLICITAÇÃO DE CONFERÊNCIA DE PAGAMENTO*\n\n"
+            f"👤 Usuário: {user.full_name}\n"
+            f"🆔 ID: `{user.id}`\n"
+            f"📦 Pedido: #{order_id}\n\n"
+            "👉 Conferir pagamento e liberar acesso manualmente."
+        ),
+        parse_mode="Markdown"
+    )
 
 # =========================
 # FastAPI webhook receiver (evolução)
