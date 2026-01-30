@@ -94,8 +94,7 @@ def plan_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🔥 Mensal — R$ 19,99", callback_data="plan:mensal")],
         [InlineKeyboardButton("👑 Anual — R$ 197,00", callback_data="plan:anual")],
-        [InlineKeyboardButton("🆘 Suporte", callback_data="support")],
-    ])
+        [InlineKeyboardButton("📩 Já paguei (chamar suporte)", callback_data="support")]
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     msg = (
