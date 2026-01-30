@@ -177,27 +177,11 @@ app = FastAPI()
 
 @app.post("/syncpay/webhook")
 async def syncpay_webhook(request: Request):
-    print("SYNC WEBHOOK HIT", dict(request.headers))
-
+    print("=== WEBHOOK CHEGOU ===")
+    print("HEADERS:", dict(request.headers))
     payload = await request.json()
-    data = payload.get("data") or payload
-
-    status = str(data.get("status", "")).upper()
-    tx_id = str(data.get("id") or data.get("transaction_id") or "")
-
-    if status in {"PAID", "CONFIRMED", "APPROVED", "COMPLETED", "SUCCESS"}:
-        row = CONN.execute(
-            "SELECT id FROM orders WHERE status IN ('PENDING','CREATED','OPEN') ORDER BY id DESC LIMIT 1"
-        ).fetchone()
-
-        if row:
-            order_id = int(row[0])
-            mark_paid(order_id, tx_id)
-
-        return JSONResponse({"received": True, "marked": True, "tx": tx_id})
-
-    return JSONResponse({"received": True, "marked": False, "status": status})
-
+    print("PAYLOAD:", payload)
+    return JSONResponse({"received": True})
 
 telegram_app: Optional[Application] = None
 
