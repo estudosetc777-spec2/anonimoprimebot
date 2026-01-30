@@ -129,10 +129,6 @@ async def plan_cb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await q.message.reply_text("⚠️ Link de pagamento não configurado no servidor (MENSAL_URL / ANUAL_URL).")
         return
 
-    kb = InlineKeyboardMarkup([
-        [InlineKeyboardButton(f"💳 Pagar {label} ({price})", url=pay_url)],
-        [InlineKeyboardButton("✅ Já paguei (verificar)", callback_data=f"check:{order_id}")]
-    ])
 
     await q.message.reply_text(
         f"✅ Plano *{label}* selecionado.\n\n"
