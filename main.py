@@ -175,14 +175,7 @@ async def check_payment_cb(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 # =========================
 app = FastAPI()
 
-@app.get("/health")
-async def health():
-    return {"ok": True}
-
 @app.post("/syncpay/webhook")
-# incoming_secret = request.headers.get("x-syncpay-secret", "")
-# if SYNC_WEBHOOK_SECRET and incoming_secret != SYNC_WEBHOOK_SECRET:
-#     raise HTTPException(status_code=401, detail="invalid webhook secret")
 async def syncpay_webhook(request: Request):
     print("SYNC WEBHOOK HIT", dict(request.headers))
 
@@ -196,26 +189,15 @@ async def syncpay_webhook(request: Request):
         row = CONN.execute(
             "SELECT id FROM orders WHERE status IN ('PENDING','CREATED','OPEN') ORDER BY id DESC LIMIT 1"
         ).fetchone()
+
         if row:
             order_id = int(row[0])
             mark_paid(order_id, tx_id)
+
         return JSONResponse({"received": True, "marked": True, "tx": tx_id})
 
     return JSONResponse({"received": True, "marked": False, "status": status})
 
-
-    payload = await request.json()
-    data = payload.get("data") or payload
-
-    status = str(data.get("status", "")).upper()
-    tx_id = str(data.get("id") or data.get("transaction_id") or "")
-
-    # TODO (produção): mapear tx -> order_id com externalRef/metadata.
-    # Aqui só confirmamos recepção.
-    if status in {"PAID", "CONFIRMED", "APPROVED", "COMPLETED", "SUCCESS"}:
-        return JSONResponse({"received": True, "status": status, "tx": tx_id})
-
-    return JSONResponse({"received": True, "status": status, "tx": tx_id})
 
 telegram_app: Optional[Application] = None
 
