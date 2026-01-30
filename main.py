@@ -139,7 +139,10 @@ async def plan_cb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         reply_markup=kb
     )
 
-async def check_payment_cb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def check_payment_cb
+await q.message.reply_text("✅ SUPORTE TESTE 123 (se você viu isso, o código novo está rodando)")
+return
+(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query
     await q.answer()
 
