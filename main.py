@@ -106,7 +106,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def support_cb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query
     await q.answer()
-    await q.message.reply_text("🆘 Suporte: fale com @SEUUSUARIO (troque aqui).")
+    await q.message.reply_text("🆘 Suporte: fale com @anonimoprimevip (toque aqui).")
 
 async def plan_cb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     q = update.callback_query
